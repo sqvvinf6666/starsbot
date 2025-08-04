@@ -1,2 +1,2 @@
-pip install aiogram
-pip install Pillow
+aiogram
+Pillow
